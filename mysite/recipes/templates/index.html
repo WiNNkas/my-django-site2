@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход | Кулинария</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://unsplash.com') center/cover; }
+        .card { background: white; padding: 40px; border-radius: 20px; width: 350px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        h2 { color: #d35400; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background: #e67e22; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
+        button:hover { background: #d35400; }
+        .error { color: red; font-size: 14px; margin-bottom: 10px; }
+        a { color: #e67e22; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>👨‍🍳 Привет, Шеф!</h2>
+        {% if error %}<p class="error">{{ error }}</p>{% endif %}
+        <form method="POST">
+            {% csrf_token %}
+            <input type="text" name="username" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Войти на кухню</button>
+        </form>
+        <p style="font-size: 14px; margin-top: 20px;">Нет аккаунта? <a href="{% url 'signup' %}">Создать</a></p>
+    </div>
+</body>
+</html>

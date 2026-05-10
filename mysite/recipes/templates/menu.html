@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Меню блюд</title>
+    <link href="https://googleapis.com" rel="stylesheet">
+    <style>
+        /* Твои стили остаются такими же, добавляю только для лайков и категорий */
+        body { font-family: 'Montserrat', sans-serif; background: #f0f2f5; padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 1100px; margin: 0 auto; }
+        .header-area { text-align: center; margin-bottom: 40px; }
+        .top-nav { display: flex; justify-content: flex-end; margin-bottom: 20px; }
+        .btn-logout { padding: 10px 20px; background: #ff4b5c; color: white; text-decoration: none; border-radius: 30px; font-size: 14px; font-weight: 600; }
+        
+        .search-form { display: flex; justify-content: center; gap: 10px; margin-bottom: 30px; }
+        .search-input, .cat-select { padding: 12px 20px; border: 2px solid #eee; border-radius: 30px; outline: none; }
+        
+        .recipe-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: white; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); overflow: hidden; transition: 0.4s; }
+        .card:hover { transform: translateY(-10px); }
+        .card img { width: 100%; height: 220px; object-fit: cover; }
+        .card-body { padding: 20px; text-align: center; }
+        
+        .btn-detail { display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #6e8efb, #a777e3); color: white; text-decoration: none; border-radius: 10px; font-weight: 600; margin-top: 10px; }
+        .like-link { color: #ff4b5c; text-decoration: none; font-weight: bold; font-size: 18px; display: block; margin-top: 10px; }
+        .category-badge { background: #e67e22; color: white; padding: 3px 10px; border-radius: 20px; font-size: 12px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="top-nav">
+        <a href="{% url 'index' %}" class="btn-logout">Выйти из аккаунта</a>
+    </div>
+
+    <div class="header-area">
+        <p>Шеф-повар: <strong>{{ chef }}</strong></p>
+        <h1>Наше Меню</h1>
+        
+        <form method="GET" class="search-form">
+            <input type="text" name="q" class="search-input" placeholder="Поиск блюда..." value="{{ query|default:'' }}">
+            <select name="category" class="cat-select" onchange="this.form.submit()">
+                <option value="">Все категории</option>
+                {% for cat in categories %}
+                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" style="display:none;"></button> 
+        </form>
+    </div>
+
+    <div class="recipe-grid">
+        {% for recipe in recipes %}
+            <div class="card">
+                {% if recipe.image %}
+                    <img src="{% static recipe.image %}" alt="{{ recipe.title }}">
+                {% else %}
+                    <img src="https://placeholder.com" alt="Нет фото">
+                {% endif %}
+                
+                <div class="card-body">
+                    <span class="category-badge">{{ recipe.category.name|default:"Без категории" }}</span>
+                    <div style="font-size: 20px; font-weight: 700; margin: 10px 0;">{{ recipe.title }}</div>
+                    <p style="font-size: 14px; color: #666;">⏱ {{ recipe.cooking_time }} мин | Сложность: {{ recipe.get_difficulty_display }}</p>
+                    
+                    <a href="{% url 'recipe_detail' recipe.pk %}" class="btn-detail">Смотреть рецепт</a>
+                    
+                    <a href="{% url 'toggle_like' recipe.pk %}" class="like-link">
+                        ❤ {{ recipe.likes.count }}
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div style="text-align: center; width: 100%; grid-column: 1 / -1;">
+                <h3>Ничего не найдено.</h3>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+</body>
+</html>
